@@ -28,3 +28,12 @@ Evaluate on the Test set:
 Test loss      :0.4239	 | Test Accuracy      : 0.8562
 
 ################## Training is Done! #########################
+=============================================
+Dataset: DeviceMotion
+Method:  TS-TCC
+Mode:    fine_tune
+=============================================
+
+Epoch : 1
+Train Loss     : 0.7676	 | 	Train Accuracy     : 0.7197
+Valid Loss     : 0.5447	 | 	Valid Accuracy     : 0.7930
