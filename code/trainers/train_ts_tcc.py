@@ -1,6 +1,5 @@
 import sys,os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # __file__获取执行文件相对路径，整行为取上一级的上一级目录
-sys.path.append(BASE_DIR)
+sys.path.append('..')
 
 import numpy as np
 import torch
@@ -21,7 +20,7 @@ def Trainer(model, temporal_contr_model, model_optimizer, temp_cont_optimizer, t
 
     for epoch in range(1, num_epoch + 1):
         # Train and validate
-        train_loss, train_acc,dict = model_train(model, temporal_contr_model, model_optimizer, temp_cont_optimizer, criterion, train_dl, device, training_mode,
+        train_loss, train_acc = model_train(model, temporal_contr_model, model_optimizer, temp_cont_optimizer, criterion, train_dl, device, training_mode,
                                                 jitter_scale_ratio,jitter_ratio,max_seg,batch_size, temperature,use_cosine_similarity)
         valid_loss, valid_acc, _, _ = model_evaluate(model, temporal_contr_model, valid_dl, device, training_mode)
         if training_mode != 'self_supervised':  # use scheduler in all other modes.
@@ -42,10 +41,6 @@ def Trainer(model, temporal_contr_model, model_optimizer, temp_cont_optimizer, t
         logger.debug(f'Test loss      :{test_loss:0.4f}\t | Test Accuracy      : {test_acc:0.4f}')
 
     logger.debug("\n################## Training is Done! #########################")
-    logger.debug(f'data shape :')
-    for key,value in dict.items():
-        logger.debug(f'{key:20}: {value}')
-
 
 
 def model_train(model, temporal_contr_model, model_optimizer, temp_cont_optimizer, criterion, train_loader, device, training_mode,
@@ -93,7 +88,6 @@ def model_train(model, temporal_contr_model, model_optimizer, temp_cont_optimize
             
         else: # supervised training or fine tuining
             predictions, features = output
-            print(predictions.shape,labels.shape)
             loss = criterion(predictions, labels)
             total_acc.append(labels.eq(predictions.detach().argmax(dim=1)).float().mean())
 
@@ -103,26 +97,12 @@ def model_train(model, temporal_contr_model, model_optimizer, temp_cont_optimize
         temp_cont_optimizer.step()
 
     total_loss = torch.tensor(total_loss).mean()
-    dict = {'sample_shape ': data.shape,
-            'label_shape': labels.shape,
-            'aug1_shape' : aug1.shape,
-            # 'z_aug1_shape' : features1.shape,
-            # 'forward_seq_shape' : forward_seq1.shape,
-            # 'z_h_shape' : z_h1.shape,
-            # 'c_token_shape' : c_tokens1.shape,
-            # 'fai0_shape' : fai_01.shape,
-            # 'faiL_shape' : fai_l1.shape,
-            # 'c_t_shape': c_t1.shape,
-            # 'ct_linear_shape':zis.shape,
-            # 'encode_samples_shape' : encode_samples1.shape,
-            # 'pred_shape': pred1.shape
-            }
 
     if training_mode == "self_supervised":
         total_acc = 0
     else:
         total_acc = torch.tensor(total_acc).mean()
-    return total_loss, total_acc,dict
+    return total_loss, total_acc
 
 
 def model_evaluate(model, temporal_contr_model, test_dl, device, training_mode):
@@ -167,3 +147,5 @@ def model_evaluate(model, temporal_contr_model, test_dl, device, training_mode):
     else:
         total_acc = torch.tensor(total_acc).mean()  # average acc
     return total_loss, total_acc, outs, trgs
+
+

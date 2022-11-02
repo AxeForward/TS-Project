@@ -9,6 +9,7 @@ import sklearn.model_selection
 import tensorflow as tf
 import torch
 from torch.utils.data import Dataset
+from typing import Dict,Tuple
 
 def get_mode(np_array):
     """
@@ -268,7 +269,7 @@ def get_fixed_split_users(har_users,test_users_fixed):
     return (train_users, test_users)
 
 
-def process_motion_files(all_trials_folders):
+def process_motion_files(all_trials_folders:list)-> Dict[str,np.array]:
     user_datasets = {}
     # Loop through every trial folder
     for trial_folder in all_trials_folders:
@@ -289,7 +290,8 @@ def process_motion_files(all_trials_folders):
                 user_trial_dataset.dropna(how = "any", inplace = True)
 
                 # Extract the x, y, z channels
-                values = user_trial_dataset[["x", "y", "z"]].values
+                #values = user_trial_dataset[["x", "y", "z"]].values
+                values = user_trial_dataset.iloc[:,1:].values
 
                 # the label is the same during the entire trial, so it is repeated here to pad to the same length as the values
                 labels = np.repeat(label, values.shape[0])
@@ -304,7 +306,7 @@ def process_motion_files(all_trials_folders):
     return user_datasets
 
 
-def pre_process_dataset_composite(user_datasets, label_map, output_shape, train_users, test_users, window_size, shift, normalise_dataset=True, validation_split_proportion=0.2, verbose=0):
+def pre_process_dataset_composite(user_datasets:Dict[str,np.array], label_map:dict,output_shape:int,train_users:list, window_size:int, shift:int, normalise_dataset=True, validation_split_proportion=0.2, verbose=0) ->Tuple[tuple,tuple,tuple]:
     # Step 1
     user_datasets_windowed = get_windows_dataset_from_user_list_format(user_datasets, window_size=window_size, shift=shift)
 
@@ -338,8 +340,8 @@ def pre_process_dataset_composite(user_datasets, label_map, output_shape, train_
     # Step 5
     # train_y_one_hot = tf.keras.utils.to_categorical(train_y_mapped, num_classes=output_shape)
     # test_y_one_hot = tf.keras.utils.to_categorical(test_y_mapped, num_classes=output_shape)
-    train_y_one_hot = train_y_mapped
-    test_y_one_hot = test_y_mapped
+    train_y_one_hot = train_y_mapped - 1
+    test_y_one_hot = test_y_mapped - 1
 
     # r = np.random.randint(len(train_y_mapped))
     # assert train_y_one_hot[r].argmax() == train_y_mapped[r]
@@ -371,7 +373,7 @@ def pre_process_dataset_composite(user_datasets, label_map, output_shape, train_
 
     return (np_train, np_val, np_test)
 
-def reprocess_motion(all_trials_folders,window_size):
+def reprocess_motion(all_trials_folders:list,window_size:int) -> Tuple[tuple,tuple,tuple]:
    
     user_datasets = process_motion_files(all_trials_folders)
 
@@ -389,9 +391,8 @@ def reprocess_motion(all_trials_folders,window_size):
     np_train, np_val, np_test = pre_process_dataset_composite(
         user_datasets=user_datasets, 
         label_map=label_map, 
-        output_shape=output_shape, 
+        output_shape = output_shape,
         train_users=train_users, 
-        test_users=test_users, 
         window_size=window_size, 
         shift=window_size//2, 
         normalise_dataset=True, 

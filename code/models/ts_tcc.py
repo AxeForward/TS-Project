@@ -154,8 +154,6 @@ class base_Model(nn.Module):
         return logits, x
 
 
-
-
 class TC(nn.Module):
     def __init__(self, final_out_channels,TC_timesteps,TC_hidden_dim,device):
         super(TC, self).__init__()
@@ -205,10 +203,10 @@ class TC(nn.Module):
 
 
 
-def get_fine_tune_model(model,experiment_log_dir,device):
+def get_fine_tune_model(model,experiment_data_dir:str,device:str):
 
     # load saved model of this experiment
-    load_from = os.path.join(os.path.join( experiment_log_dir+'\saved_models'))
+    load_from = os.path.join(os.path.join( experiment_data_dir+'\self_supervised\saved_models'))
     chkpoint = torch.load(os.path.join(load_from, "ckp_last.pt"), map_location=device)
     pretrained_dict = chkpoint["model_state_dict"]
     model_dict = model.state_dict()
