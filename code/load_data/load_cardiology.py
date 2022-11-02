@@ -93,7 +93,6 @@ def Cardiology_preprocess():
     #        else:
     #            label = 1
     #    labels = np.repeat(label,frames.shape[0]).tolist()
-    #            
     #    inputs[patient_number] = frames
     #    outputs[patient_number] = labels
         
@@ -135,7 +134,7 @@ def load_cardiology_data():
     frame_data, label_data = pickle.load(f_frame), pickle.load(f_label)
     x, y = [], []
     for num, patient_number in enumerate(frame_data.keys()):
-        if num == 5: ################ 设定样本量，一个num包含23个样本
+        if num == 3: ################ 设定样本量，一个num包含23个样本
             break
         x += frame_data[patient_number].tolist() 
         y += label_data[patient_number].tolist() 
