@@ -1,5 +1,7 @@
+# Includes utility functions of two models
 import numpy as np
 import pandas as pd
+import random
 import torch
 import logging
 import sys
@@ -109,3 +111,13 @@ def _calc_metrics(pred_labels, true_labels, log_dir):
     cm_file_name = f"{exp_name}_{training_mode}_confusion_matrix.torch"
     cm_Save_path = os.path.join(log_dir, cm_file_name)
     torch.save(cm, cm_Save_path)
+
+####### For mix up model################################
+
+def to_np(x):
+    return x.cpu().detach().numpy()
+
+def set_global_seed(seed:int):
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
