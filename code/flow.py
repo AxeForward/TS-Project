@@ -1,5 +1,6 @@
-<<<<<<< HEAD
+# If tests are needed, just cancel one of those comments
 # Main Running File
+'''
 import torch as th
 import argparse
 import os
@@ -58,14 +59,14 @@ if __name__ == '__main__':
 else:
     print('Someting Wrong')
 
+'''
 
 
 
 
 
 
-
-=======
+'''
 import torch
 import numpy as np
 from datetime import datetime
@@ -181,6 +182,6 @@ if model_name == 'ts_tcc':
 
 elif model_name == 'mix_up':
     print(1)
->>>>>>> 84c342758b6d1704232891c6a0329cb69b1e4fa4
+'''
 
 
