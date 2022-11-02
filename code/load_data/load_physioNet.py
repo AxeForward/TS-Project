@@ -4,9 +4,8 @@ from scipy.io import loadmat
 
 def load_physionet2020_data():
     directory_path = r'./data/PhysioNet2020/Training_WFDB/'
-    x = list()
-    y = list()
-    for file in os.listdir(directory_path)[:100]: ###################
+    x, y = [], []
+    for file in os.listdir(directory_path)[:100]: ###########
         file_path = os.path.join(directory_path, file)
         if not file.lower().startswith('.') and file.lower().endswith('mat') and os.path.isfile(file_path):
             data = loadmat(file_path)
@@ -32,7 +31,7 @@ def load_physionet2017_data():
     files = os.listdir(training_path)
     filenames = [file for file in files if file.endswith('.mat')]
     x = []
-    for name in filenames[:10]:###########
+    for name in filenames[:9]:###########
         data = loadmat(os.path.join(training_path,name))
         data_x = np.asarray(data['val'], dtype=np.float64) 
         data_x = data_x.tolist()[0]
@@ -57,3 +56,4 @@ def shift_y(x):
             else:
                 n += 1
     return new
+    
