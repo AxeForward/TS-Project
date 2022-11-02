@@ -15,7 +15,7 @@ def toarray(x,y):
 
     x = np.array(np.ndarray.tolist(x), dtype=np.float32)
     y = np.array(np.ndarray.tolist(y), dtype=np.int32)
-    return x,y
+    return x, y
 
 
 #@title create dataset
