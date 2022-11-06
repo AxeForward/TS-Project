@@ -2,10 +2,9 @@ from genericpath import isdir
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import os
-import json
-import pickle
+import os, json, pickle
 from scipy.signal import resample
+from sklearn.model_selection import train_test_split
 
 def Cardiology_preprocess():
     basepath = r"./data/Cardiology/"
@@ -93,6 +92,7 @@ def Cardiology_preprocess():
     #        else:
     #            label = 1
     #    labels = np.repeat(label,frames.shape[0]).tolist()
+    #            
     #    inputs[patient_number] = frames
     #    outputs[patient_number] = labels
         
@@ -134,11 +134,10 @@ def load_cardiology_data():
     frame_data, label_data = pickle.load(f_frame), pickle.load(f_label)
     x, y = [], []
     for num, patient_number in enumerate(frame_data.keys()):
-        if num == 3: ################ 设定样本量，一个num包含23个样本
+        if num == 5: ################ 设定样本量，一个num包含23个样本
             break
         x += frame_data[patient_number].tolist() 
         y += label_data[patient_number].tolist() 
-    x_dataframe = pd.DataFrame({'x':x})
-    x_train, y_train = x_dataframe.iloc[:int(len(x)*0.7),0], y[:int(len(x)*0.7)]
-    x_test, y_test = x_dataframe.iloc[int(len(x)*0.7):,0], y[int(len(x)*0.7):]
-    return x_train, y_train, x_test, y_test
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+    X_train, X_test = pd.DataFrame({'x':X_train}), pd.DataFrame({'x':X_test})
+    return X_train, y_train, X_test, y_test
