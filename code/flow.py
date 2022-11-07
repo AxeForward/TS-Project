@@ -1,6 +1,6 @@
 # If tests are needed, just cancel one of those comments
 # Main Running File
-'''
+
 import torch as th
 import argparse
 import os
@@ -59,7 +59,6 @@ if __name__ == '__main__':
 else:
     print('Someting Wrong')
 
-'''
 
 
 
