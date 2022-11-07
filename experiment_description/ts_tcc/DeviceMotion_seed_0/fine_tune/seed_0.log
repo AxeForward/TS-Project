@@ -1,0 +1,39 @@
+=============================================
+Dataset: DeviceMotion
+Method:  TS-TCC
+Mode:    fine_tune
+=============================================
+
+Epoch : 1
+Train Loss     : 0.7676	 | 	Train Accuracy     : 0.7197
+Valid Loss     : 0.5447	 | 	Valid Accuracy     : 0.7930
+
+Epoch : 2
+Train Loss     : 0.2916	 | 	Train Accuracy     : 0.9084
+Valid Loss     : 0.3375	 | 	Valid Accuracy     : 0.8984
+
+Epoch : 3
+Train Loss     : 0.1369	 | 	Train Accuracy     : 0.9705
+Valid Loss     : 0.1569	 | 	Valid Accuracy     : 0.9619
+
+Epoch : 4
+Train Loss     : 0.0909	 | 	Train Accuracy     : 0.9834
+Valid Loss     : 0.1285	 | 	Valid Accuracy     : 0.9658
+
+Epoch : 5
+Train Loss     : 0.0724	 | 	Train Accuracy     : 0.9858
+Valid Loss     : 0.1284	 | 	Valid Accuracy     : 0.9570
+
+Evaluate on the Test set:
+Test loss      :0.4239	 | Test Accuracy      : 0.8562
+
+################## Training is Done! #########################
+=============================================
+Dataset: DeviceMotion
+Method:  TS-TCC
+Mode:    fine_tune
+=============================================
+
+Epoch : 1
+Train Loss     : 0.7676	 | 	Train Accuracy     : 0.7197
+Valid Loss     : 0.5447	 | 	Valid Accuracy     : 0.7930

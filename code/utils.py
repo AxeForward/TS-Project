@@ -6,6 +6,7 @@ import torch
 import logging
 import sys
 import os
+from typing import Tuple
 from sklearn.metrics import classification_report, cohen_kappa_score, confusion_matrix, accuracy_score
 ####################__argment__##################
 def DataTransform(sample, jitter_scale_ratio,jitter_ratio,max_seg):
@@ -53,7 +54,7 @@ def permutation(x, max_segments=5, seg_mode="random"):
 #####################################################################
 
 
-def to_dict(names):
+def to_dict(names:dict) -> Tuple[dict,dict,dict]:
     for dict_name in ['train','val','test']:
         names[dict_name+'_dict'] = dict()
         names[dict_name+'_dict']["samples"] = torch.from_numpy(names.get('X_'+dict_name))

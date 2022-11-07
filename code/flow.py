@@ -65,18 +65,16 @@ else:
 
 
 
-'''
+
 import torch
 import numpy as np
 from datetime import datetime
 import argparse
-import sys,os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # __file__获取执行文件相对路径，整行为取上一级的上一级目录
-sys.path.append(BASE_DIR)
+import os
 import importlib
 from load_data import load_raw
 import utils
-
+from pytorch_model_summary import summary
 parser = argparse.ArgumentParser()
 
 ######################## Model parameters ########################
@@ -125,8 +123,13 @@ max_seg = args.max_seg
 Dataset = importlib.import_module('dataset.'+str(data_source_name.lower())+'_dataset')
 model_import = importlib.import_module('models.'+str(model_name))
 train_model = importlib.import_module('trainers.train_'+str(model_name))
-print('##########_load_data_############')
-#####################load datasets#####################################################
+print('########## fix random seeds #############')
+SEED = args.seed
+torch.manual_seed(SEED)
+torch.backends.cudnn.deterministic = False
+torch.backends.cudnn.benchmark = False
+np.random.seed(SEED)
+print('##########_load_data_#################')
 train_data,val_data,test_data = load_raw.get_raw_data(data_source_name,selected_data_name)
 train_dataset = Dataset.My_Dataset(train_data)
 valid_dataset = Dataset.My_Dataset(val_data)
@@ -141,20 +144,14 @@ valid_loader = torch.utils.data.DataLoader(dataset=valid_dataset, batch_size=bat
 test_loader = torch.utils.data.DataLoader(dataset=test_dataset, batch_size=batch_size,
                                             shuffle=False, drop_last=True,
                                             num_workers=0)
-print("##########_succeed_load_#########")
-# ##### fix random seeds for reproducibility ########
-SEED = args.seed
-torch.manual_seed(SEED)
-torch.backends.cudnn.deterministic = False
-torch.backends.cudnn.benchmark = False
-np.random.seed(SEED)
-#####################################################
+print("###########_succeed_load_###########")
+
 if model_name == 'ts_tcc':
-    experiment_log_dir = os.path.join('../experiment_description', model_name,selected_data_name)
-    print(experiment_log_dir)
+    experiment_data_dir = os.path.join('../experiment_description', model_name,selected_data_name+ f'_seed_{SEED}')
+    experiment_log_dir = os.path.join(experiment_data_dir,training_mode)
     os.makedirs(experiment_log_dir, exist_ok=True)
-    # Logging ######################################
-    log_file_name = os.path.join(experiment_log_dir, training_mode + f"_seed_{SEED}.log")
+    print('###############_Logging_###############')
+    log_file_name = os.path.join(experiment_log_dir , f'seed_{SEED}.log')
     logger = utils._logger(log_file_name)
     logger.debug("=" * 45)
     logger.debug(f'Dataset: {selected_data_name}')
@@ -167,20 +164,23 @@ if model_name == 'ts_tcc':
     model_optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=3e-4)
     temporal_contr_optimizer = torch.optim.Adam(temporal_contr_model.parameters(), lr=3e-4, betas=(0.9, 0.99), weight_decay=3e-4)
     if training_mode == 'fine_tune':
-        model = model_import.get_fine_tune_model(model,experiment_log_dir,device)
+        model = model_import.get_fine_tune_model(model,experiment_data_dir,device)
+    print(summary(model, torch.zeros(batch_size,input_channels,400), show_input=False))
+    print(summary(temporal_contr_model, torch.zeros(batch_size,final_out_channels,features_len),torch.zeros(batch_size,final_out_channels,features_len), show_input=False))
     print('##########_training_start_###########')
     train_model.Trainer(model, temporal_contr_model, model_optimizer, temporal_contr_optimizer, train_loader, valid_loader, test_loader, 
                         device,num_epoch, logger,experiment_log_dir,training_mode,jitter_scale_ratio,jitter_ratio,max_seg,batch_size, temperature=0.2,use_cosine_similarity=True)
-    print('###########_training_done_############')
+    ###########_training_done_############'
 
     if training_mode != "self_supervised":
-    # Testing
+        print('##############_Testing_###############')
         outs = train_model.model_evaluate(model, temporal_contr_model, test_loader, device, training_mode)
         total_loss, total_acc, pred_labels, true_labels = outs
         utils._calc_metrics(pred_labels, true_labels, experiment_log_dir)
+        print('###############_Testing_done_#############')
 
 elif model_name == 'mix_up':
     print(1)
-'''
+
 
 
