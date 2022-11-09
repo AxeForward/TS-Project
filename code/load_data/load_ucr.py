@@ -1,7 +1,7 @@
 import pandas as pd
 
 def ucr_process(filename: str, type: str ):
-    path = r'TS-Project\data\UCR\ACSF1\{}_{}.tsv'.format(filename,type.upper())
+    path = 'data/UCR/ACSF1/{}_{}.tsv'.format(filename,type.upper())
     data = pd.read_csv(path, sep='\t', header=None)
     data = pd.DataFrame(data)
     data_x = data.iloc[:,1:]

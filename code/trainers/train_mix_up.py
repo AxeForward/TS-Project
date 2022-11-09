@@ -13,7 +13,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from utils import to_np
 from losses.mix_up_loss import MixUpLoss
 
-def test_model(model, training_set, test_set):
+def evaluate_model(model, training_set, test_set):
 
     model.eval()
 
@@ -91,7 +91,7 @@ def train_mixup_model_epoch(model, training_set, test_set, optimizer, alpha, epo
             LossList.append(loss.item())
 
 
-        AccList.append(test_model(model, training_set, test_set))
+        AccList.append(evaluate_model(model, training_set, test_set))
 
         print(f"Epoch number: {epoch}")
         print(f"Loss: {LossList[-1]}")

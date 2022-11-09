@@ -1,12 +1,12 @@
 # Main Running File
 import torch as th
 import argparse
+import os
 import sys
-from sktime.datasets import load_gunpoint
-from dataset.ucr_dataset import toarray, MyDataset
+from dataset.ucr_dataset import UCRDataset
+from dataset.uea_dataset import UEADataset
 from models.mix_up import FCN 
 from trainers.train_mix_up import train_mixup_model_epoch
-from plot import plot_results
 from utils import set_global_seed
 from load_data.load_ucr import load_ucr
 from load_data.load_uea import load_uea
@@ -36,15 +36,15 @@ if __name__ == '__main__':
 
     set_global_seed(random_seed)
     if data_source == 'ucr':
-        x_tr, y_tr, x_te, y_te  = load_ucr(filename=filename)
+        x_tr, y_tr, x_te, y_te = load_ucr(filename=filename)
 
-        training_set = MyDataset(x_tr, y_tr)
-        test_set = MyDataset(x_te, y_te)
+        training_set = UCRDataset(x_tr, y_tr)
+        test_set = UCRDataset(x_te, y_te)
     elif data_source == 'uea':
-        x_tr, y_tr, x_te, y_te  = load_uea(filename=filename)
+        x_tr, y_tr, x_te, y_te = load_uea(filename=filename)
 
-        training_set = MyDataset(x_tr, y_tr)
-        test_set = MyDataset(x_te, y_te)
+        training_set = UEADataset(x_tr, y_tr)
+        test_set = UEADataset(x_te, y_te)
     else:
         print('Please enter our supported data source')
         sys.exit()
@@ -57,10 +57,11 @@ if __name__ == '__main__':
     #print(LossListM)
 
     print(f"Score for alpha = {alpha}: {AccListM[-1]}")
-    plot_results(LossListM, AccListM)
 
-    ucr_result = pd.DataFrame({"loss": LossListM, "acc": AccListM})
-    ucr_result.to_csv(r'TS-Project\code\ucr_result.csv')
+    model_result = pd.DataFrame({"loss": LossListM, "acc": AccListM})
+    res_file_name = args.dataset + '_' + str(epochs) + 'epochs' + '_' + str(random_seed) + 'seed' + '.csv'
+    res_path = os.path.join(os.path.dirname(__file__), 'tests', 'results', 'mix_up', data_source.upper(), res_file_name)
+    model_result.to_csv(res_path)
 
 else:
     print('Someting Wrong')
