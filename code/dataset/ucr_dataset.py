@@ -20,7 +20,7 @@ def toarray(x,y):
 
 #@title create dataset
 
-class MyDataset(Dataset):
+class UCRDataset(Dataset):
     def __init__(self, x, y):
 
         device = 'cuda' if th.cuda.is_available() else 'cpu'

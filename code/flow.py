@@ -32,7 +32,8 @@ if __name__ == '__main__':
 
     utils.set_global_seed(random_seed)
     if data_source == 'ucr':
-        pass
+        x_tr, y_tr = load_ucr_data(filename=filename, typename='train')
+        x_te, y_te = load_ucr_data(filename=filename, typename='test')
     elif data_source == 'uea':
         pass
     elif data_source == 'kpi':
@@ -65,7 +66,7 @@ else:
 
 
 
-
+'''
 import torch
 import numpy as np
 from datetime import datetime
@@ -182,5 +183,5 @@ if model_name == 'ts_tcc':
 elif model_name == 'mix_up':
     print(1)
 
-
+'''
 
