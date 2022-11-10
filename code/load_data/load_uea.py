@@ -18,7 +18,7 @@ def shift_label(label:list):
     return label_shifted
 
 def uea_process(filename: str, type: str):
-    path = 'data/UEA/Epilepsy/{}_{}.arff'.format(filename,type.upper())
+    path = 'data/UEA/{}/{}_{}.arff'.format(filename, filename, type.upper())
     with open(path, 'r') as file:
         file_content = file.readlines()
 

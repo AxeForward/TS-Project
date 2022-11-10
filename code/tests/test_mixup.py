@@ -10,7 +10,9 @@ def get_results_path()->os.PathLike:
     results_dir = os.path.join(test_dir, 'results')
     return results_dir
 
-@pytest.mark.parametrize('Origin_Result, Project_Result', [('ACSF1_10epochs_42seed.csv', 'ucr_ACSF1_10epochs_42seed.csv')])
+@pytest.mark.parametrize('Origin_Result, Project_Result',
+                         [('ACSF1_10epochs_42seed.csv', 'ucr_ACSF1_10epochs_42seed.csv'),
+                          ('notebookGunPoint_10epochs_42seed.csv', 'GunPoint_10epochs_42seed.csv')])
 def test_mix_up_ucr(get_results_path, Origin_Result, Project_Result):
     origin_res_file = os.path.join(get_results_path, 'mix_up', 'UCR', Origin_Result)
     df_origin = pd.read_csv(origin_res_file, index_col=0)
