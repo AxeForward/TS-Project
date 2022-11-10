@@ -10,7 +10,7 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 from utils import to_np
 from losses.mix_up_loss import MixUpLoss
-from tasks.evaluate_mix_up import evaluate_mixup_model
+from tasks.evaluate_mixup import evaluate_mixup_model
 
 
 def train_mixup_model_epoch(model, training_set, test_set, optimizer, alpha, epochs, batch_size_tr):
