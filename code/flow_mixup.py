@@ -21,6 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', type=float, default=1.0, help='The alpha')
     parser.add_argument('--device', type=str, default='cpu' ,help='cpu for CPU and cuda for NVIDIA GPU')
     parser.add_argument('--seed', type=int, default=42, help='random seed')
+    parser.add_argument('--batchsize_tr', type=int, default=10, help='batch_size_tr')
     
     args = parser.parse_args()
     print("Data Source:", args.datasource.upper())
@@ -33,6 +34,7 @@ if __name__ == '__main__':
     alpha = args.alpha
     filename = args.dataset
     random_seed = args.seed
+    batch_size_tr = args.batchsize_tr
 
     set_global_seed(random_seed)
     if data_source == 'ucr':
@@ -52,7 +54,7 @@ if __name__ == '__main__':
     model = FCN(training_set.x.shape[1]).to(device)
     optimizer = th.optim.Adam(model.parameters())
     LossListM, AccListM = train_mixup_model_epoch(model, training_set, test_set,
-                                              optimizer, alpha, epochs)
+                                              optimizer, alpha, epochs, batch_size_tr)
 
     #print(LossListM)
 
