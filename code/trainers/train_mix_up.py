@@ -1,64 +1,22 @@
 # Train and evlueate the model
 import torch as th
-import torch.nn as nn
 import numpy as np
 from IPython.display import clear_output
 import os
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 import sys
 current_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
-from sklearn.neighbors import KNeighborsClassifier
 from utils import to_np
 from losses.mix_up_loss import MixUpLoss
-
-def evaluate_model(model, training_set, test_set):
-
-    model.eval()
-
-    N_tr = len(training_set.x)
-    N_te = len(test_set.x)
-
-    training_generator = DataLoader(training_set, batch_size=1,
-                                    shuffle=True, drop_last=False)
-    test_generator = DataLoader(test_set, batch_size= 1,
-                                    shuffle=True, drop_last=False)
-
-    H_tr = th.zeros((N_tr, 128))
-    y_tr = th.zeros((N_tr), dtype=th.long)
-
-    H_te = th.zeros((N_te, 128))
-    y_te = th.zeros((N_te), dtype=th.long)
-
-    for idx_tr, (x_tr, y_tr_i) in enumerate(training_generator):
-        with th.no_grad():
-            _, H_tr_i = model(x_tr)
-            H_tr[idx_tr] = H_tr_i
-            y_tr[idx_tr] = y_tr_i
-
-    H_tr = to_np(nn.functional.normalize(H_tr))
-    y_tr = to_np(y_tr)
+from tasks.evaluate_mixup import evaluate_mixup_model
 
 
-    for idx_te, (x_te, y_te_i) in enumerate(test_generator):
-        with th.no_grad():
-            _, H_te_i = model(x_te)
-            H_te[idx_te] = H_te_i
-            y_te[idx_te] = y_te_i
-
-    H_te = to_np(nn.functional.normalize(H_te))
-    y_te = to_np(y_te)
-
-    clf = KNeighborsClassifier(n_neighbors=1).fit(H_tr, y_tr)
-
-    return clf.score(H_te, y_te)
-
-
-def train_mixup_model_epoch(model, training_set, test_set, optimizer, alpha, epochs):
+def train_mixup_model_epoch(model, training_set, test_set, optimizer, alpha, epochs, batch_size_tr):
 
     device = 'cuda' if th.cuda.is_available() else 'cpu'
-    batch_size_tr = len(training_set.x)
+    # batch_size_tr = len(training_set.x)
 
     LossList, AccList = [] , []
     criterion = MixUpLoss(device, batch_size_tr)
@@ -91,7 +49,7 @@ def train_mixup_model_epoch(model, training_set, test_set, optimizer, alpha, epo
             LossList.append(loss.item())
 
 
-        AccList.append(evaluate_model(model, training_set, test_set))
+        AccList.append(evaluate_mixup_model(model, training_set, test_set))
 
         print(f"Epoch number: {epoch}")
         print(f"Loss: {LossList[-1]}")
