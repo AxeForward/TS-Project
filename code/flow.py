@@ -184,4 +184,10 @@ elif model_name == 'mix_up':
     print(1)
 
 '''
+LossListM,AccListM = Trainer(model, temporal_contr_model, model_optimizer, temporal_contr_optimizer, train_dl, valid_dl, test_dl, device, logger, configs, experiment_log_dir, training_mode)
 
+LossListM,AccListM
+model_result = pd.DataFrame({"loss": LossListM, "acc": AccListM})
+res_file_name = data_source + '_' +data_type + '_' + str(configs.num_epoch) + 'epochs' + '_' + str(SEED) + 'seed' + '.csv'
+res_path = os.path.join(os.path.dirname(__file__), 'tests', 'results', 'ts_tcc', 'uci', res_file_name)#data_source.upper()
+model_result.to_csv(res_path)
