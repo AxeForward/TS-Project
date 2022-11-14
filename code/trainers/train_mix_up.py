@@ -13,10 +13,10 @@ from losses.mix_up_loss import MixUpLoss
 from tasks.evaluate_mixup import evaluate_mixup_model
 
 
-def train_mixup_model_epoch(model, training_set, test_set, optimizer, alpha, epochs, batch_size_tr):
+def train_mixup_model_epoch(model, training_set, test_set, optimizer, alpha, epochs):
 
     device = 'cuda' if th.cuda.is_available() else 'cpu'
-    # batch_size_tr = len(training_set.x)
+    batch_size_tr = len(training_set.x)
 
     LossList, AccList = [] , []
     criterion = MixUpLoss(device, batch_size_tr)
