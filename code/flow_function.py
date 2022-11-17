@@ -3,25 +3,19 @@ import os
 import sys
 from dataset.ucr_dataset import UCRDataset
 from dataset.uea_dataset import UEADataset
-from dataset.physionet_dataset import Physionet_Dataset
-from dataset.cardiology_dataset import Cardiology_Dataset
+#from dataset.physionet_dataset import Physionet_Dataset
+#from dataset.cardiology_dataset import Cardiology_Dataset
 from models.mix_up import FCN 
 from trainers.train_mix_up import train_mixup_model_epoch
 from utils import set_global_seed
 from load_data.load_ucr import load_ucr
 from load_data.load_uea import load_uea
-from load_data.load_physionet import load_physionet2017_data, load_physionet2020_data
-from load_data.load_cardiology import load_cardiology_data
+#from load_data.load_physionet import load_physionet2017_data, load_physionet2020_data
+#from load_data.load_cardiology import load_cardiology_data
 import pandas as pd
 
-def flow_mixup_function(args):
-    data_source = args.datasource
-    device = args.device
-    epochs = args.epochs
-    alpha = args.alpha
-    filename = args.dataset
-    random_seed = args.seed
-    # batch_size_tr = args.batchsize_tr
+def flow_mixup_function(data_source:str, filename:str, epochs:int, batch_size:int,
+                        alpha:float, random_seed:int, device:str='cpu'):
 
     set_global_seed(random_seed)
     if data_source == 'ucr':
@@ -59,14 +53,18 @@ def flow_mixup_function(args):
     model = FCN(training_set.x.shape[1]).to(device)
     optimizer = th.optim.Adam(model.parameters())
     LossListM, AccListM = train_mixup_model_epoch(model, training_set, test_set,
-                                              optimizer, alpha, epochs)
+                                              optimizer, alpha, epochs, batch_size, device)
 
-    #print(LossListM)
-
+    '''
     print(f"Score for alpha = {alpha}: {AccListM[-1]}")
 
     model_result = pd.DataFrame({"loss": LossListM, "acc": AccListM})
-    res_file_name = args.dataset + '_' + str(epochs) + 'epochs' + '_' + str(random_seed) + 'seed' + '.csv'
-    # res_file_name = filename + '_' + str(epochs) + 'epochs' + '_' + str(random_seed) + 'seed' + '.csv'
+    res_file_name = filename + '_' + str(epochs) + 'epochs' + '_' + str(random_seed) + 'seed' + '.csv'
     res_path = os.path.join(os.path.dirname(__file__), 'tests', 'results', 'mix_up', data_source.upper(), res_file_name)
     model_result.to_csv(res_path)
+    '''
+    return LossListM, AccListM
+
+if __name__ == '__main__':
+    print(flow_mixup_function('ucr', 'GunPoint', 10, 50, 1.0, 42))
+
