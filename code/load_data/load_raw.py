@@ -1,16 +1,20 @@
 import glob
 import importlib
 import sys
+import os
 sys.path.append("..")
 from typing import Tuple,Any
 import pandas as pd
 
+file_dir = os.path.dirname(__file__)
+code__dir = os.path.dirname(file_dir)
+data_dir = os.path.join(os.path.dirname(code__dir), 'data')
 def get_raw_data(data_source_name:str,selected_data_name:str) -> Tuple[Any,Any,Any]:
  
     dataset_module = importlib.import_module('dataset.'+str(data_source_name.lower())+'_dataset')
     if data_source_name == 'UCI':
         if selected_data_name == 'Epilepsy':
-            dataset = pd.read_csv(r'..\data\UCI\Epilepsy\data.csv')
+            dataset = pd.read_csv(os.path.join(data_dir, 'UCI', 'Epilepsy', 'data.csv'))
             train_data,val_data,test_data = dataset_module.reprocess_epil(dataset)
         elif selected_data_name == 'HAR':
             print(1)

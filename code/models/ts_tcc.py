@@ -206,7 +206,7 @@ class TC(nn.Module):
 def get_fine_tune_model(model,experiment_data_dir:str,device:str):
 
     # load saved model of this experiment
-    load_from = os.path.join(os.path.join( experiment_data_dir+'\self_supervised\saved_models'))
+    load_from = os.path.join(experiment_data_dir, 'self_supervised', 'saved_models')
     chkpoint = torch.load(os.path.join(load_from, "ckp_last.pt"), map_location=device)
     pretrained_dict = chkpoint["model_state_dict"]
     model_dict = model.state_dict()
